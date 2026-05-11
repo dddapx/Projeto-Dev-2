@@ -1,5 +1,5 @@
 package dev2.projeto_semestre.dto;
 
-public class InvestidorRequestDTO {
-
+public record InvestidorRequestDTO(String nome, String email) {
+    
 }

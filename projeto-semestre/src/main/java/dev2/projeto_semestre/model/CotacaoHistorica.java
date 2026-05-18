@@ -16,6 +16,13 @@ public class CotacaoHistorica {
 
     private Double preco;
 
+    @ManyToOne
+    @JoinColumn(name = "ativo_financeiro_id")
+    private AtivoFinanceiro ativoFinanceiro;
+
+    public AtivoFinanceiro getAtivoFinanceiro() { return ativoFinanceiro; }
+    public void setAtivoFinanceiro(AtivoFinanceiro ativoFinanceiro) { this.ativoFinanceiro = ativoFinanceiro; }
+
     public CotacaoHistorica() {
     }
 

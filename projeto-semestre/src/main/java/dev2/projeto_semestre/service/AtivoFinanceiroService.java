@@ -1,6 +1,6 @@
 package dev2.projeto_semestre.service;
 
-
+import dev2.projeto_semestre.model.AtivoFinanceiro;
 
 @Service
 public class AtivoFinanceiroService {
@@ -17,24 +17,7 @@ public class AtivoFinanceiroService {
         this.hgBrasilApiService = hgBrasilApiService;
     }
 
-    @RestController
-    @RequestMapping("/api/ativos")
-    public class AtivoFinanceiroController {
-
-        private final AtivoFinanceiroService service;
-
-        public AtivoFinanceiroController(AtivoFinanceiroService service) {
-            this.service = service;
-        }
-
-        @GetMapping
-        public ResponseEntity<List<AtivoFinanceiro>> listar() {
-            return ResponseEntity.ok(service.listarTodos());
-        }
-
-        @GetMapping("/{id}")
-        public ResponseEntity<AtivoFinanceiro> buscarPorId(@PathVariable Long id) {
-            return ResponseEntity.ok(service.buscarAtivoPorId(id));
-        }
+    public AtivoFinanceiro criarAtivo (String codigo){
+        
     }
 }

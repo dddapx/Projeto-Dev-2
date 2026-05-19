@@ -1,6 +1,8 @@
 package dev2.projeto_semestre.controller;
 
-    @RestController
+import dev2.projeto_semestre.model.AtivoFinanceiro;
+
+@RestController
     @RequestMapping("/api/ativos")
     public class AtivoFinanceiroController {
 
@@ -8,6 +10,12 @@ package dev2.projeto_semestre.controller;
 
         public AtivoFinanceiroController(AtivoFinanceiroService service) {
             this.service = service;
+        }
+
+        @PostMapping
+        public ResponseEntity<AtivoFinanceiro> criar(@RequestBody AtivoFinanceiro ativo){
+        AtivoFinanceiro resultado = service.criarAtivo(ativo.getCodigo());
+        return ResponseEntity.status(HttpStatus.CREATED).body(resultado);
         }
 
         @GetMapping

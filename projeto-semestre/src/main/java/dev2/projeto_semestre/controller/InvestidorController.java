@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import dev2.projeto_semestre.dto.InvestidorRequestDTO;
 import dev2.projeto_semestre.dto.InvestidorResponseDTO;
+import dev2.projeto_semestre.model.Investidor;
 import dev2.projeto_semestre.service.InvestidorService;
 
 @RestController
@@ -33,6 +34,12 @@ public class InvestidorController {
     @GetMapping
     public ResponseEntity<List<InvestidorResponseDTO>> listar() {
         return ResponseEntity.ok(service.listarTodos());
+    }
+
+    public void atualizar(){
+    Investidor entidade = repository.findById(id).orElseThrow(() 
+    -> new RuntimeException("Registro não encontrado!"));
+    return entidade; 
     }
 }
 

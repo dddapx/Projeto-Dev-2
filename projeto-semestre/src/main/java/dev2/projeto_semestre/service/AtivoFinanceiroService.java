@@ -1,6 +1,7 @@
 package dev2.projeto_semestre.service;
 
 import dev2.projeto_semestre.model.AtivoFinanceiro;
+import dev2.projeto_semestre.model.CotacaoHistorica;
 
 @Service
 public class AtivoFinanceiroService {
@@ -18,6 +19,20 @@ public class AtivoFinanceiroService {
     }
 
     public AtivoFinanceiro criarAtivo (String codigo){
+        AtivoFinanceiro af1 = new AtivoFinanceiro();
+        af1.setCodigo(codigo);
+        AtivoFinanceiro ativoSalvo = ativoRepository.save(af1);
+
+        try { 
+            double preco = hgBrasilApiService.buscarPrecoAtivo(codigo);
+            CotacaoHistorica c1 = new CotacaoHistorica();
+            c1.setPreco(preco);
+            c1.setAtivoFinanceiro(ativoSalvo);
+            cotacaoRepository.save();
+        } catch (Exception e) { 
+            throw new RuntimeException("Erro ao buscar cotação inicial", e);
+          }
         
+          return ativoSalvo;
     }
 }

@@ -36,5 +36,26 @@ public class InvestidorService {
                 .map(inv -> new InvestidorResponseDTO(inv.getId(), inv.getNome(), inv.getEmail()))
                 .toList();
     }
+
+    public InvestidorResponseDTO buscarPorId(Long id) {
+        Investidor inv = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Investidor não encontrado!"));
+        return new InvestidorResponseDTO(inv.getId(), inv.getNome(), inv.getEmail());
+    }
+
+    public InvestidorResponseDTO atualizarInvestidor(Long id, InvestidorRequestDTO dto) {
+        Investidor inv = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Investidor não encontrado!"));
+        inv.setNome(dto.nome());
+        inv.setEmail(dto.email());
+        Investidor atualizado = repository.save(inv);
+        return new InvestidorResponseDTO(atualizado.getId(), atualizado.getNome(), atualizado.getEmail());
+    }
+
+    public void deletarInvestidor(Long id) {
+        Investidor inv = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Investidor não encontrado!"));
+        repository.delete(inv);
+    }
 }
 

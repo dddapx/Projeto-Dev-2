@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import dev2.projeto_semestre.dto.InvestidorRequestDTO;
 import dev2.projeto_semestre.dto.InvestidorResponseDTO;
@@ -36,10 +39,20 @@ public class InvestidorController {
         return ResponseEntity.ok(service.listarTodos());
     }
 
-    public void atualizar(){
-    Investidor entidade = repository.findById(id).orElseThrow(() 
-    -> new RuntimeException("Registro não encontrado!"));
-    return entidade; 
+    @GetMapping("/{id}")
+    public ResponseEntity<InvestidorResponseDTO> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(service.buscarPorId(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<InvestidorResponseDTO> atualizar(@PathVariable Long id, @RequestBody InvestidorRequestDTO request) {
+        return ResponseEntity.ok(service.atualizarInvestidor(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        service.deletarInvestidor(id);
+        return ResponseEntity.noContent().build();
     }
 }
 

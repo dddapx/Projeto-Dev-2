@@ -48,4 +48,38 @@ public class CarteiraService {
                 carteiraSalva.getInvestidor().getNome()
         );
     }
+
+    public CarteiraResponseDTO buscarPorId(Long id) {
+        Carteira carteira = carteiraRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Carteira não encontrada!"));
+        return new CarteiraResponseDTO(
+                carteira.getId(),
+                carteira.getNome(),
+                carteira.getInvestidor().getNome()
+        );
+    }
+
+    public CarteiraResponseDTO atualizarCarteira(Long id, CarteiraRequestDTO dto) {
+        Carteira carteira = carteiraRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Carteira não encontrada!"));
+        
+        Investidor investidor = investidorRepository.findById(dto.getInvestidorId())
+                .orElseThrow(() -> new RuntimeException("Investidor não encontrado!"));
+        
+        carteira.setNome(dto.getNome());
+        carteira.setInvestidor(investidor);
+        Carteira atualizada = carteiraRepository.save(carteira);
+        
+        return new CarteiraResponseDTO(
+                atualizada.getId(),
+                atualizada.getNome(),
+                atualizada.getInvestidor().getNome()
+        );
+    }
+
+    public void deletarCarteira(Long id) {
+        Carteira carteira = carteiraRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Carteira não encontrada!"));
+        carteiraRepository.delete(carteira);
+    }
 }

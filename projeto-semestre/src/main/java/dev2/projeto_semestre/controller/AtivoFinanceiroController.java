@@ -39,4 +39,15 @@ public class AtivoFinanceiroController {
         public ResponseEntity<AtivoFinanceiro> buscarPorId(@PathVariable Long id) {
             return ResponseEntity.ok(service.buscarAtivoPorId(id));
         }
+
+        @PutMapping("/{id}")
+        public ResponseEntity<AtivoFinanceiroResponseDTO> atualizar(@PathVariable Long id, @RequestBody AtivoFinanceiroRequestDTO request) {
+            return ResponseEntity.ok(service.atualizarAtivoFinanceiro(id, request));
+        }
+
+        @DeleteMapping("/{id}")
+        public ResponseEntity<Void> deletar(@PathVariable Long id) {
+            service.deletarAtivoFinanceiro(id);
+            return ResponseEntity.noContent().build();
+        }
     }

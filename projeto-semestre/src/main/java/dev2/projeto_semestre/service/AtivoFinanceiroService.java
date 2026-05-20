@@ -49,4 +49,28 @@ public class AtivoFinanceiroService {
         return ativoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ativo não encontrado: " + id));
     }
+
+    public AtivoResponseDTO atualizarAtivo(Long id, AtivoRequestDTO dto) {
+        Ativo ativo = AtivoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ativo não encontrada!"));
+        
+        Investidor investidor = investidorRepository.findById(dto.getInvestidorId())
+                .orElseThrow(() -> new RuntimeException("Investidor não encontrado!"));
+        
+        Ativo.setNome(dto.getNome());
+        Ativo.setInvestidor(investidor);
+        Ativo atualizada = AtivoRepository.save(Ativo);
+        
+        return new AtivoResponseDTO(
+                atualizada.getId(),
+                atualizada.getNome(),
+                atualizada.getInvestidor().getNome()
+        );
+    }
+
+    public void deletarAtivo(Long id) {
+        Ativo Ativo = AtivoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ativo não encontrada!"));
+        AtivoRepository.delete(Ativo);
+    }
 }

@@ -2,6 +2,11 @@ package dev2.projeto_semestre.service;
 
 import dev2.projeto_semestre.model.AtivoFinanceiro;
 import dev2.projeto_semestre.model.CotacaoHistorica;
+import dev2.projeto_semestre.repository.AtivoFinanceiroRepository;
+import dev2.projeto_semestre.repository.CotacaoHistoricaRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class AtivoFinanceiroService {
@@ -23,16 +28,25 @@ public class AtivoFinanceiroService {
         af1.setCodigo(codigo);
         AtivoFinanceiro ativoSalvo = ativoRepository.save(af1);
 
-        try { 
+        try {
             double preco = hgBrasilApiService.buscarPrecoAtivo(codigo);
             CotacaoHistorica c1 = new CotacaoHistorica();
             c1.setPreco(preco);
             c1.setAtivoFinanceiro(ativoSalvo);
-            cotacaoRepository.save();
-        } catch (Exception e) { 
+            cotacaoRepository.save(c1);
+        } catch (Exception e) {
             throw new RuntimeException("Erro ao buscar cotação inicial", e);
-          }
-        
-          return ativoSalvo;
+        }
+
+        return ativoSalvo;
+    }
+
+    public List<AtivoFinanceiro> listarTodos() {
+        return ativoRepository.findAll();
+    }
+
+    public AtivoFinanceiro buscarAtivoPorId(Long id) {
+        return ativoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ativo não encontrado: " + id));
     }
 }

@@ -20,15 +20,15 @@ public class CarteiraService {
 
     private final CarteiraRepository carteiraRepository;
     private final InvestidorRepository investidorRepository;
-    private final TransacaoRepository transacaoRepository;
-    private final HgBrasilApiService hgBrasilApiService;
+    private final TransacaoRepository transacaoRepository; 
 
-    public CarteiraService(CarteiraRepository carteiraRepository, InvestidorRepository investidorRepository,
-                           TransacaoRepository transacaoRepository,HgBrasilApiService hgBrasilApiService) {
+    // Construtor atualizado com os 3 repositórios
+    public CarteiraService(CarteiraRepository carteiraRepository, 
+                           InvestidorRepository investidorRepository,
+                           TransacaoRepository transacaoRepository) { 
         this.carteiraRepository = carteiraRepository;
         this.investidorRepository = investidorRepository;
-        this.transacaoRepository = transacaoRepository;
-        this.hgBrasilApiService = hgBrasilApiService;
+        this.transacaoRepository = transacaoRepository; 
     }
 
     public CarteiraResponseDTO criarCarteira(CarteiraRequestDTO dto) {
@@ -36,7 +36,6 @@ public class CarteiraService {
         Optional<Investidor> resultadoDoBanco = investidorRepository.findById(dto.getInvestidorId());
 
         Investidor donoDaCarteira;
-
         if (resultadoDoBanco.isPresent()) {
             donoDaCarteira = resultadoDoBanco.get(); 
         } else {
@@ -45,8 +44,6 @@ public class CarteiraService {
 
         Carteira novaCarteira = new Carteira();
         novaCarteira.setNome(dto.getNome());
-        
-        
         novaCarteira.setInvestidor(donoDaCarteira);
 
         Carteira carteiraSalva = carteiraRepository.save(novaCarteira);
@@ -55,50 +52,6 @@ public class CarteiraService {
                 carteiraSalva.getId(),
                 carteiraSalva.getNome(),
                 carteiraSalva.getInvestidor().getNome()
-        );
-    }
-
-    public ResumoCarteiraDTO gerarResumo(Long id) {
-        
-        // busca a carteira no banco de dados para ver se ela existe
-        Carteira carteira = carteiraRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Carteira não encontrada!"));
-
-        List<Transacao> todasTransacoes = transacaoRepository.findAll();
-
-        double totalInvestido = 0.0;
-        double totalAtual = 0.0;
-
-        // faz um laço de repetição para olhar uma transação de cada vez
-        for (Transacao t : todasTransacoes) {
-            // verifica se essa transação pertence a carteira que estamos calculando
-            if (t.getCarteira().getId().equals(id)) {
-                
-                String codigoDaAcao = t.getAtivoFinanceiro().getCodigo();
-                int quantidade = t.getQuantidade();
-                double precoDeQuandoComprou = t.getPrecoOperacao();
-                
-                double precoDeHoje = hgBrasilApiService.buscarPrecoAtivo(codigoDaAcao);
-                
-                // se foi uma compra, soma o valor na carteira
-                if (t.getTipoOperacao().equalsIgnoreCase("COMPRA")) {
-                    totalInvestido += (quantidade * precoDeQuandoComprou);
-                    totalAtual += (quantidade * precoDeHoje);
-                } 
-                // se foi uma venda, diminui o valor dela
-                else if (t.getTipoOperacao().equalsIgnoreCase("VENDA")) {
-                    totalInvestido -= (quantidade * precoDeQuandoComprou);
-                    totalAtual -= (quantidade * precoDeHoje);
-                }
-            }
-        }
-
-        // monta o dto para devolver pro usuário com as respostas
-        return new ResumoCarteiraDTO(
-                carteira.getNome(),
-                carteira.getInvestidor().getNome(),
-                totalInvestido,
-                totalAtual
         );
     }
 
@@ -134,5 +87,32 @@ public class CarteiraService {
         Carteira carteira = carteiraRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Carteira não encontrada!"));
         carteiraRepository.delete(carteira);
+    }
+
+    public ResumoCarteiraDTO obterResumoCarteira(Long id) {
+        // 1. Busca a carteira
+        Carteira carteira = carteiraRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Carteira não encontrada!"));
+
+        // 2. Busca todas as transações ligadas a esta carteira
+        List<Transacao> transacoes = transacaoRepository.findByCarteiraId(id);
+
+        // 3. A Lógica Simples e Segura 
+        double total = 0.0;
+        for (Transacao t : transacoes) {
+            if ("COMPRA".equalsIgnoreCase(t.getTipoOperacao())) {
+                total += (t.getQuantidade() * t.getPrecoOperacao());
+            } else if ("VENDA".equalsIgnoreCase(t.getTipoOperacao())) {
+                total -= (t.getQuantidade() * t.getPrecoOperacao());
+            }
+        }
+
+        // 4. Monta e devolve a resposta final para o utilizador
+        ResumoCarteiraDTO resumo = new ResumoCarteiraDTO();
+        resumo.setNomeCarteira(carteira.getNome());
+        resumo.setNomeInvestidor(carteira.getInvestidor().getNome());
+        resumo.setTotalInvestido(total);
+
+        return resumo;
     }
 }

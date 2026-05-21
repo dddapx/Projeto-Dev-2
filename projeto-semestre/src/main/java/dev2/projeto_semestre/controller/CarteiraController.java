@@ -46,4 +46,9 @@ public class CarteiraController {
         service.deletarCarteira(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/{id}/resumo")
+    public ResponseEntity<dev2.projeto_semestre.dto.ResumoCarteiraDTO> obterResumo(@PathVariable Long id) {
+        return ResponseEntity.ok(service.obterResumoCarteira(id));
+    }
 }

@@ -1,15 +1,19 @@
 package dev2.projeto_semestre.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import dev2.projeto_semestre.dto.CarteiraRequestDTO;
 import dev2.projeto_semestre.dto.CarteiraResponseDTO;
+import dev2.projeto_semestre.dto.ResumoCarteiraDTO;
 import dev2.projeto_semestre.model.Carteira;
 import dev2.projeto_semestre.model.Investidor;
+import dev2.projeto_semestre.model.Transacao;
 import dev2.projeto_semestre.repository.CarteiraRepository;
 import dev2.projeto_semestre.repository.InvestidorRepository;
+import dev2.projeto_semestre.repository.TransacaoRepository;
 
 @Service
 public class CarteiraService {

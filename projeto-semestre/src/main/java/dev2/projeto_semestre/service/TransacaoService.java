@@ -66,24 +66,4 @@ public class TransacaoService {
         );
     }
 
-    public TransacaoResponseDTO buscarPorId(Long id) {
-        Transacao inv = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Transacao não encontrada!"));
-        return new TransacaoResponseDTO(inv.getId(), inv.getNome(), inv.getEmail());
     }
-
-    public TransacaoResponseDTO atualizarTransacao(Long id, TransacaoRequestDTO dto) {
-        Transacao inv = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Transacao não encontrada!"));
-        inv.setNome(dto.nome());
-        inv.setEmail(dto.email());
-        Transacao atualizado = repository.save(inv);
-        return new TransacaoResponseDTO(atualizado.getId(), atualizado.getNome(), atualizado.getEmail());
-    }
-
-    public void deletarTransacao(Long id) {
-        Transacao inv = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Transacao não encontrada!"));
-        repository.delete(inv);
-    }
-}

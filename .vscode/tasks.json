@@ -1,0 +1,18 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "spring-boot: run",
+			"type": "shell",
+			"command": "mvn",
+			"args": [
+				"-f",
+				"projeto-semestre/pom.xml",
+				"spring-boot:run"
+			],
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}

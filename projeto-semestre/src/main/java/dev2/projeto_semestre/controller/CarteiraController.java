@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.CrossOrigin;
+
 
 import dev2.projeto_semestre.dto.CarteiraRequestDTO;
 import dev2.projeto_semestre.dto.CarteiraResponseDTO;
@@ -17,6 +19,7 @@ import dev2.projeto_semestre.service.CarteiraService;
 
 @RestController
 @RequestMapping("/api/carteiras") 
+@CrossOrigin(origins = "*")
 public class CarteiraController {
 
     private final CarteiraService service;

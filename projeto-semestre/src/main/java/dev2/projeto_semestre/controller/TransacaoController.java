@@ -6,13 +6,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import dev2.projeto_semestre.dto.TransacaoRequestDTO;
 import dev2.projeto_semestre.dto.TransacaoResponseDTO;
 import dev2.projeto_semestre.service.TransacaoService;
 
 @RestController 
-@RequestMapping("/api/transacoes") 
+@RequestMapping("/api/transacoes")
+@CrossOrigin(origins = "*")
 public class TransacaoController {
 
     private final TransacaoService service;

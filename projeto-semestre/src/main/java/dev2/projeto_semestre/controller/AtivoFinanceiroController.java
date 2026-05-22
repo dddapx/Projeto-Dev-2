@@ -2,6 +2,7 @@ package dev2.projeto_semestre.controller;
 
 import dev2.projeto_semestre.model.AtivoFinanceiro;
 import dev2.projeto_semestre.service.AtivoFinanceiroService;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/ativos")
+@CrossOrigin(origins = "*")
 public class AtivoFinanceiroController {
 
         private final AtivoFinanceiroService service;

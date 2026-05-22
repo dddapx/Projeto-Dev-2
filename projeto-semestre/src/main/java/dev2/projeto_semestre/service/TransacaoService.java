@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import dev2.projeto_semestre.dto.TransacaoRequestDTO;
 import dev2.projeto_semestre.dto.TransacaoResponseDTO;
+import dev2.projeto_semestre.exceptions.NotFoundException;
 import dev2.projeto_semestre.model.AtivoFinanceiro;
 import dev2.projeto_semestre.model.Carteira;
 import dev2.projeto_semestre.model.Transacao;
@@ -35,7 +36,7 @@ public class TransacaoService {
         if (carteiraOpt.isPresent()) {
             carteira = carteiraOpt.get();
         } else {
-            throw new RuntimeException("Carteira não encontrada!");
+            throw new NotFoundException("Carteira não encontrada!");
         }
 
         Optional<AtivoFinanceiro> ativoOpt = ativoRepository.findById(dto.getAtivoFinanceiroId());
@@ -43,7 +44,7 @@ public class TransacaoService {
         if (ativoOpt.isPresent()) {
             ativo = ativoOpt.get();
         } else {
-            throw new RuntimeException("Ativo Financeiro não encontrado!");
+            throw new NotFoundException("Ativo Financeiro não encontrado!");
         }
 
         Transacao novaTransacao = new Transacao();
@@ -65,5 +66,4 @@ public class TransacaoService {
                 salva.getTipoOperacao()
         );
     }
-
     }

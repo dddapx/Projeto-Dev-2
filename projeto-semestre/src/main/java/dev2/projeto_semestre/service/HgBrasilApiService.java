@@ -2,6 +2,8 @@ package dev2.projeto_semestre.service;
 
 import java.util.Map;
 
+import dev2.projeto_semestre.exceptions.ExternalServiceException;
+
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -30,30 +32,33 @@ public class HgBrasilApiService {
 
             Map<String, Object> body = response.getBody();
             if (body == null || !body.containsKey("results")) {
-                throw new RuntimeException("Resposta invalida da HG Brasil");
+                throw new ExternalServiceException("Resposta inválida da HG Brasil");
             }
 
             Object resultsObj = body.get("results");
             if (!(resultsObj instanceof Map)) {
-                throw new RuntimeException("Resposta invalida da HG Brasil");
+                throw new ExternalServiceException("Resposta inválida da HG Brasil");
             }
 
             Map<?, ?> results = (Map<?, ?>) resultsObj;
             Object tickerObj = results.get(ticker.toUpperCase());
             if (!(tickerObj instanceof Map)) {
-                throw new RuntimeException("Ticker nao encontrado na resposta da HG Brasil");
+                throw new ExternalServiceException("Ticker não encontrado na resposta da HG Brasil");
             }
 
             Map<?, ?> tickerData = (Map<?, ?>) tickerObj;
             Object price = tickerData.get("price");
             if (price == null) {
-                throw new RuntimeException("Preco nao encontrado na resposta da HG Brasil");
+                throw new ExternalServiceException("Preço não encontrado na resposta da HG Brasil");
             }
 
             return Double.valueOf(price.toString());
 
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao buscar preço da ação " + ticker + " na HG Brasil. Verifique o código da ação ou a sua chave.", e);
+            throw new ExternalServiceException(
+                    "Erro ao buscar preço da ação " + ticker + " na HG Brasil. Verifique o código da ação ou a sua chave.",
+                    e
+            );
         }
     }
 }

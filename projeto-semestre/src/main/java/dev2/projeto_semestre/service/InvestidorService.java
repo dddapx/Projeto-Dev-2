@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import dev2.projeto_semestre.dto.InvestidorRequestDTO;
 import dev2.projeto_semestre.dto.InvestidorResponseDTO;
+import dev2.projeto_semestre.exceptions.NotFoundException;
 import dev2.projeto_semestre.model.Investidor;
 import dev2.projeto_semestre.repository.InvestidorRepository;
 
@@ -39,13 +40,13 @@ public class InvestidorService {
 
     public InvestidorResponseDTO buscarPorId(Long id) {
         Investidor inv = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Investidor não encontrado!"));
+                .orElseThrow(() -> new NotFoundException("Investidor não encontrado!"));
         return new InvestidorResponseDTO(inv.getId(), inv.getNome(), inv.getEmail());
     }
 
     public InvestidorResponseDTO atualizarInvestidor(Long id, InvestidorRequestDTO dto) {
         Investidor inv = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Investidor não encontrado!"));
+                .orElseThrow(() -> new NotFoundException("Investidor não encontrado!"));
         inv.setNome(dto.nome());
         inv.setEmail(dto.email());
         Investidor atualizado = repository.save(inv);
@@ -54,7 +55,7 @@ public class InvestidorService {
 
     public void deletarInvestidor(Long id) {
         Investidor inv = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Investidor não encontrado!"));
+                .orElseThrow(() -> new NotFoundException("Investidor não encontrado!"));
         repository.delete(inv);
     }
 }

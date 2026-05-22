@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import dev2.projeto_semestre.dto.CarteiraRequestDTO;
 import dev2.projeto_semestre.dto.CarteiraResponseDTO;
 import dev2.projeto_semestre.dto.ResumoCarteiraDTO;
+import dev2.projeto_semestre.exceptions.NotFoundException;
 import dev2.projeto_semestre.model.Carteira;
 import dev2.projeto_semestre.model.Investidor;
 import dev2.projeto_semestre.model.Transacao;
@@ -39,7 +40,7 @@ public class CarteiraService {
         if (resultadoDoBanco.isPresent()) {
             donoDaCarteira = resultadoDoBanco.get(); 
         } else {
-            throw new RuntimeException("Investidor não encontrado!");
+            throw new NotFoundException("Investidor não encontrado!");
         }
 
         Carteira novaCarteira = new Carteira();
@@ -57,7 +58,7 @@ public class CarteiraService {
 
     public CarteiraResponseDTO buscarPorId(Long id) {
         Carteira carteira = carteiraRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Carteira não encontrada!"));
+                .orElseThrow(() -> new NotFoundException("Carteira não encontrada!"));
         return new CarteiraResponseDTO(
                 carteira.getId(),
                 carteira.getNome(),
@@ -67,10 +68,10 @@ public class CarteiraService {
 
     public CarteiraResponseDTO atualizarCarteira(Long id, CarteiraRequestDTO dto) {
         Carteira carteira = carteiraRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Carteira não encontrada!"));
+            .orElseThrow(() -> new NotFoundException("Carteira não encontrada!"));
         
         Investidor investidor = investidorRepository.findById(dto.getInvestidorId())
-                .orElseThrow(() -> new RuntimeException("Investidor não encontrado!"));
+            .orElseThrow(() -> new NotFoundException("Investidor não encontrado!"));
         
         carteira.setNome(dto.getNome());
         carteira.setInvestidor(investidor);
@@ -85,14 +86,14 @@ public class CarteiraService {
 
     public void deletarCarteira(Long id) {
         Carteira carteira = carteiraRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Carteira não encontrada!"));
+                .orElseThrow(() -> new NotFoundException("Carteira não encontrada!"));
         carteiraRepository.delete(carteira);
     }
 
     public ResumoCarteiraDTO obterResumoCarteira(Long id) {
         // 1. Busca a carteira
         Carteira carteira = carteiraRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Carteira não encontrada!"));
+            .orElseThrow(() -> new NotFoundException("Carteira não encontrada!"));
 
         // 2. Busca todas as transações ligadas a esta carteira
         List<Transacao> transacoes = transacaoRepository.findByCarteiraId(id);
@@ -111,7 +112,7 @@ public class CarteiraService {
         ResumoCarteiraDTO resumo = new ResumoCarteiraDTO();
         resumo.setNomeCarteira(carteira.getNome());
         resumo.setNomeInvestidor(carteira.getInvestidor().getNome());
-        resumo.setTotalInvestido(total);
+        resumo.setValorTotalInvestido(total);
 
         return resumo;
     }

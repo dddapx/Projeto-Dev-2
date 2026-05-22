@@ -2,6 +2,8 @@ package dev2.projeto_semestre.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.springframework.stereotype.Service;
 
@@ -21,15 +23,18 @@ public class CarteiraService {
 
     private final CarteiraRepository carteiraRepository;
     private final InvestidorRepository investidorRepository;
-    private final TransacaoRepository transacaoRepository; 
+    private final TransacaoRepository transacaoRepository;
+    private final HgBrasilApiService hgBrasilApiService;
 
     // Construtor atualizado com os 3 repositórios
     public CarteiraService(CarteiraRepository carteiraRepository, 
                            InvestidorRepository investidorRepository,
-                           TransacaoRepository transacaoRepository) { 
+                           TransacaoRepository transacaoRepository,
+                           HgBrasilApiService hgBrasilApiService) { 
         this.carteiraRepository = carteiraRepository;
         this.investidorRepository = investidorRepository;
-        this.transacaoRepository = transacaoRepository; 
+        this.transacaoRepository = transacaoRepository;
+        this.hgBrasilApiService = hgBrasilApiService;
     }
 
     public CarteiraResponseDTO criarCarteira(CarteiraRequestDTO dto) {
@@ -91,28 +96,39 @@ public class CarteiraService {
     }
 
     public ResumoCarteiraDTO obterResumoCarteira(Long id) {
-        // 1. Busca a carteira
         Carteira carteira = carteiraRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("Carteira não encontrada!"));
 
-        // 2. Busca todas as transações ligadas a esta carteira
         List<Transacao> transacoes = transacaoRepository.findByCarteiraId(id);
 
-        // 3. A Lógica Simples e Segura 
-        double total = 0.0;
+        double totalInvestido = 0.0;
+        double totalAtual = 0.0;
+        
+        Map<String, Double> cacheDePrecos = new HashMap<>();
+
         for (Transacao t : transacoes) {
+            String ticker = t.getAtivoFinanceiro().getCodigo();
+            
+            if (!cacheDePrecos.containsKey(ticker)) {
+                cacheDePrecos.put(ticker, hgBrasilApiService.buscarPrecoAtivo(ticker));
+            }
+            
+            double precoDeHoje = cacheDePrecos.get(ticker);
+            
             if ("COMPRA".equalsIgnoreCase(t.getTipoOperacao())) {
-                total += (t.getQuantidade() * t.getPrecoOperacao());
+                totalInvestido += (t.getQuantidade() * t.getPrecoOperacao()); 
+                totalAtual += (t.getQuantidade() * precoDeHoje);              
             } else if ("VENDA".equalsIgnoreCase(t.getTipoOperacao())) {
-                total -= (t.getQuantidade() * t.getPrecoOperacao());
+                totalInvestido -= (t.getQuantidade() * t.getPrecoOperacao());
+                totalAtual -= (t.getQuantidade() * precoDeHoje);
             }
         }
 
-        // 4. Monta e devolve a resposta final para o utilizador
         ResumoCarteiraDTO resumo = new ResumoCarteiraDTO();
         resumo.setNomeCarteira(carteira.getNome());
         resumo.setNomeInvestidor(carteira.getInvestidor().getNome());
-        resumo.setValorTotalInvestido(total);
+        resumo.setValorTotalInvestido(totalInvestido);
+        resumo.setValorTotalAtual(totalAtual); 
 
         return resumo;
     }

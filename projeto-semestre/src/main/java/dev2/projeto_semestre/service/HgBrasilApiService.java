@@ -1,7 +1,6 @@
 package dev2.projeto_semestre.service;
 
 import java.util.Map;
-
 import dev2.projeto_semestre.exceptions.ExternalServiceException;
 
 import org.springframework.core.ParameterizedTypeReference;
@@ -9,6 +8,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 
 @Service
 public class HgBrasilApiService {
@@ -17,7 +17,10 @@ public class HgBrasilApiService {
     private final String BASE_URL = "https://api.hgbrasil.com/finance/stock_price";
 
     public Double buscarPrecoAtivo(String ticker) {
-        RestTemplate restTemplate = new RestTemplate();
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(5000);
+        factory.setReadTimeout(5000);
+        RestTemplate restTemplate = new RestTemplate(factory);
         
         String url = BASE_URL + "?key=" + API_KEY + "&symbol=" + ticker;
 
@@ -26,8 +29,7 @@ public class HgBrasilApiService {
                     url,
                     HttpMethod.GET,
                     null,
-                    new ParameterizedTypeReference<Map<String, Object>>() {
-                    }
+                    new ParameterizedTypeReference<Map<String, Object>>() {}
             );
 
             Map<String, Object> body = response.getBody();
@@ -56,9 +58,7 @@ public class HgBrasilApiService {
 
         } catch (Exception e) {
             throw new ExternalServiceException(
-                    "Erro ao buscar preço da ação " + ticker + " na HG Brasil. Verifique o código da ação ou a sua chave.",
-                    e
-            );
+                    "Erro ao buscar preço da ação " + ticker + " na HG Brasil.", e);
         }
     }
 }

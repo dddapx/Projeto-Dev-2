@@ -1,64 +1,38 @@
 package dev2.projeto_semestre.service;
 
 import java.util.Map;
-import dev2.projeto_semestre.exceptions.ExternalServiceException;
 
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
+
+import dev2.projeto_semestre.exceptions.ExternalServiceException;
 
 @Service
 public class HgBrasilApiService {
 
     private final String API_KEY = "2aef7024"; 
-    private final String BASE_URL = "https://api.hgbrasil.com/finance/stock_price";
+    private final String BASE_URL = "https://api.hgbrasil.com/finance";
 
     public Double buscarPrecoAtivo(String ticker) {
-        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(5000);
-        factory.setReadTimeout(5000);
-        RestTemplate restTemplate = new RestTemplate(factory);
-        
-        String url = BASE_URL + "?key=" + API_KEY + "&symbol=" + ticker;
+        String url = BASE_URL + "?key=" + API_KEY;
+        RestTemplate restTemplate = new RestTemplate();
 
         try {
-            ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.GET,
-                    null,
-                    new ParameterizedTypeReference<Map<String, Object>>() {}
-            );
+            Map resposta = restTemplate.getForObject(url, Map.class);
 
-            Map<String, Object> body = response.getBody();
-            if (body == null || !body.containsKey("results")) {
-                throw new ExternalServiceException("Resposta inválida da HG Brasil");
+            Map results = (Map) resposta.get("results");
+            Map stocks = (Map) results.get("stocks");
+            
+            Map dadosDoAtivo = (Map) stocks.get(ticker.toUpperCase());
+
+            if (dadosDoAtivo == null) {
+                throw new ExternalServiceException("O ativo " + ticker + " não foi encontrado.");
             }
 
-            Object resultsObj = body.get("results");
-            if (!(resultsObj instanceof Map)) {
-                throw new ExternalServiceException("Resposta inválida da HG Brasil");
-            }
-
-            Map<?, ?> results = (Map<?, ?>) resultsObj;
-            Object tickerObj = results.get(ticker.toUpperCase());
-            if (!(tickerObj instanceof Map)) {
-                throw new ExternalServiceException("Ticker não encontrado na resposta da HG Brasil");
-            }
-
-            Map<?, ?> tickerData = (Map<?, ?>) tickerObj;
-            Object price = tickerData.get("price");
-            if (price == null) {
-                throw new ExternalServiceException("Preço não encontrado na resposta da HG Brasil");
-            }
-
-            return Double.valueOf(price.toString());
+            return Double.valueOf(dadosDoAtivo.get("price").toString());
 
         } catch (Exception e) {
-            throw new ExternalServiceException(
-                    "Erro ao buscar preço da ação " + ticker + " na HG Brasil.", e);
+            throw new ExternalServiceException("Erro de rede ao buscar a cotação na HG Brasil.", e);
         }
     }
 }

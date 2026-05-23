@@ -1,11 +1,10 @@
 package dev2.projeto_semestre.controller;
 
-import dev2.projeto_semestre.model.AtivoFinanceiro;
-import dev2.projeto_semestre.service.AtivoFinanceiroService;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,11 +12,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import dev2.projeto_semestre.model.AtivoFinanceiro;
+import dev2.projeto_semestre.service.AtivoFinanceiroService;
 
 @RestController
 @RequestMapping("/api/ativos")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")
 public class AtivoFinanceiroController {
 
         private final AtivoFinanceiroService service;

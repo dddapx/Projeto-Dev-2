@@ -2,11 +2,11 @@ package dev2.projeto_semestre.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import dev2.projeto_semestre.dto.TransacaoRequestDTO;
 import dev2.projeto_semestre.dto.TransacaoResponseDTO;
@@ -14,7 +14,7 @@ import dev2.projeto_semestre.service.TransacaoService;
 
 @RestController 
 @RequestMapping("/api/transacoes")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")
 public class TransacaoController {
 
     private final TransacaoService service;

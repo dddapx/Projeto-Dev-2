@@ -1,9 +1,9 @@
 package dev2.projeto_semestre.service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -89,6 +89,12 @@ public class CarteiraService {
         );
     }
 
+    public List<CarteiraResponseDTO> listarCarteirasPorInvestidor(Long investidorId) {
+        return carteiraRepository.findByInvestidorId(investidorId).stream()
+                .map(c -> new CarteiraResponseDTO(c.getId(), c.getNome(), c.getInvestidor().getNome()))
+                .toList();
+    }
+
     public void deletarCarteira(Long id) {
         Carteira carteira = carteiraRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Carteira não encontrada!"));
@@ -110,7 +116,12 @@ public class CarteiraService {
             String ticker = t.getAtivoFinanceiro().getCodigo();
             
             if (!cacheDePrecos.containsKey(ticker)) {
-                cacheDePrecos.put(ticker, hgBrasilApiService.buscarPrecoAtivo(ticker));
+                try {
+                    cacheDePrecos.put(ticker, hgBrasilApiService.buscarPrecoAtivo(ticker));
+                } catch (Exception e) {
+                    System.out.println("Aviso: Não foi possível obter o preço de " + ticker + ". Assumindo 0.0");
+                    cacheDePrecos.put(ticker, 0.0); 
+                }
             }
             
             double precoDeHoje = cacheDePrecos.get(ticker);

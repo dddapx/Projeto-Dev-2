@@ -1,11 +1,15 @@
 package dev2.projeto_semestre.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import dev2.projeto_semestre.dto.TransacaoRequestDTO;
@@ -29,6 +33,15 @@ public class TransacaoController {
         TransacaoResponseDTO response = service.registrarTransacao(request);
         
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<TransacaoResponseDTO>> listar(
+            @RequestParam(required = false) Long carteiraId) {
+        if (carteiraId != null) {
+            return ResponseEntity.ok(service.listarTransacoesDaCarteira(carteiraId));
+        }
+        return ResponseEntity.ok(service.listarTodasTransacoes());
     }
 
 }

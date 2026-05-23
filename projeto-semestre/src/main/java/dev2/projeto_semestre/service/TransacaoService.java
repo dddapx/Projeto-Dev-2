@@ -1,5 +1,6 @@
 package dev2.projeto_semestre.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -66,4 +67,21 @@ public class TransacaoService {
                 salva.getTipoOperacao()
         );
     }
+
+    public List<TransacaoResponseDTO> listarTransacoesDaCarteira(Long carteiraId) {
+        return transacaoRepository.findByCarteiraId(carteiraId).stream()
+            .map(t -> new TransacaoResponseDTO(
+                    t.getId(), t.getCarteira().getNome(), t.getAtivoFinanceiro().getCodigo(),
+                    t.getQuantidade(), t.getPrecoOperacao(), t.getTipoOperacao()
+            )).toList();
+    }
+
+    public List<TransacaoResponseDTO> listarTodasTransacoes() {
+        return transacaoRepository.findAll().stream()
+            .map(t -> new TransacaoResponseDTO(
+                    t.getId(), t.getCarteira().getNome(), t.getAtivoFinanceiro().getCodigo(),
+                    t.getQuantidade(), t.getPrecoOperacao(), t.getTipoOperacao()
+            )).toList();
+    }
+
     }

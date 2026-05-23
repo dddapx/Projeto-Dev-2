@@ -1,5 +1,7 @@
 package dev2.projeto_semestre.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import dev2.projeto_semestre.dto.CarteiraRequestDTO;
@@ -36,6 +39,16 @@ public class CarteiraController {
     @GetMapping("/{id}")
     public ResponseEntity<CarteiraResponseDTO> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(service.buscarPorId(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<CarteiraResponseDTO>> listarPorInvestidor(
+            @RequestParam(required = false) Long investidorId) {
+        
+        if (investidorId != null) {
+            return ResponseEntity.ok(service.listarCarteirasPorInvestidor(investidorId));
+        }
+        return ResponseEntity.ok(java.util.Collections.emptyList());
     }
 
     @PutMapping("/{id}")

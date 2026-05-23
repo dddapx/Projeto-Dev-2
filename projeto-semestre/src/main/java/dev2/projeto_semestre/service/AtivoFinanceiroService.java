@@ -1,14 +1,16 @@
 package dev2.projeto_semestre.service;
 
-import dev2.projeto_semestre.model.AtivoFinanceiro;
-import dev2.projeto_semestre.model.CotacaoHistorica;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import dev2.projeto_semestre.exceptions.ExternalServiceException;
 import dev2.projeto_semestre.exceptions.NotFoundException;
+import dev2.projeto_semestre.model.AtivoFinanceiro;
+import dev2.projeto_semestre.model.CotacaoHistorica;
 import dev2.projeto_semestre.repository.AtivoFinanceiroRepository;
 import dev2.projeto_semestre.repository.CotacaoHistoricaRepository;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class AtivoFinanceiroService {
@@ -25,20 +27,24 @@ public class AtivoFinanceiroService {
         this.hgBrasilApiService = hgBrasilApiService;
     }
 
+    @Transactional
     public AtivoFinanceiro criarAtivo (String codigo){
+        
+        double preco;
+        try {
+            preco = hgBrasilApiService.buscarPrecoAtivo(codigo);
+        } catch (Exception e) {
+            throw new ExternalServiceException("Erro na API: O ativo '" + codigo + "' não está disponível no plano gratuito. Tente 'IBOVESPA' ou 'NASDAQ'.", e);
+        }
+
         AtivoFinanceiro af1 = new AtivoFinanceiro();
-        af1.setCodigo(codigo);
+        af1.setCodigo(codigo.toUpperCase());
         AtivoFinanceiro ativoSalvo = ativoRepository.save(af1);
 
-        try {
-            double preco = hgBrasilApiService.buscarPrecoAtivo(codigo);
-            CotacaoHistorica c1 = new CotacaoHistorica();
-            c1.setPreco(preco);
-            c1.setAtivoFinanceiro(ativoSalvo);
-            cotacaoRepository.save(c1);
-        } catch (Exception e) {
-            throw new ExternalServiceException("Erro ao buscar cotação inicial", e);
-        }
+        CotacaoHistorica c1 = new CotacaoHistorica();
+        c1.setPreco(preco);
+        c1.setAtivoFinanceiro(ativoSalvo);
+        cotacaoRepository.save(c1);
 
         return ativoSalvo;
     }

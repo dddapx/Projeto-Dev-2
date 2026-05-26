@@ -117,12 +117,12 @@ public class CarteiraService {
             
             if (!cacheDePrecos.containsKey(ticker)) {
                 try {
-                    cacheDePrecos.put(ticker, hgBrasilApiService.buscarPrecoAtivo(ticker));
-                } catch (Exception e) {
-                    System.out.println("Aviso: Não foi possível obter o preço de " + ticker + ". Assumindo 0.0");
-                    cacheDePrecos.put(ticker, 0.0); 
+                    double precoApi = hgBrasilApiService.buscarPrecoAtivo(ticker);
+                        cacheDePrecos.put(ticker, precoApi);
+                    } catch (Exception e) {
+                        cacheDePrecos.put(ticker, 0.0);
+                    }
                 }
-            }
             
             double precoDeHoje = cacheDePrecos.get(ticker);
             

@@ -1,6 +1,7 @@
 package dev2.projeto_semestre.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,5 +66,22 @@ public class CarteiraController {
     @GetMapping("/{id}/resumo")
     public ResponseEntity<dev2.projeto_semestre.dto.ResumoCarteiraDTO> obterResumo(@PathVariable Long id) {
         return ResponseEntity.ok(service.obterResumoCarteira(id));
+    }
+}
+
+@RestController
+@RequestMapping("/api/estatisticas/carteira")
+@CrossOrigin(origins = "http://localhost:3000")
+class EstatisticasCarteiraController {
+
+    private final CarteiraService service;
+
+    public EstatisticasCarteiraController(CarteiraService service) {
+        this.service = service;
+    }
+
+    @GetMapping("/{carteiraId}/resumo")
+    public ResponseEntity<Map<String, Object>> obterResumo(@PathVariable Long carteiraId) {
+        return ResponseEntity.ok(service.obterResumoEstatisticasCarteira(carteiraId));
     }
 }

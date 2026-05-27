@@ -1,9 +1,11 @@
 package dev2.projeto_semestre.service;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
@@ -141,6 +143,29 @@ public class CarteiraService {
         resumo.setValorTotalInvestido(totalInvestido);
         resumo.setValorTotalAtual(totalAtual); 
 
+        return resumo;
+    }
+
+    public Map<String, Object> obterResumoEstatisticasCarteira(Long carteiraId) {
+        carteiraRepository.findById(carteiraId)
+            .orElseThrow(() -> new NotFoundException("Carteira não encontrada!"));
+
+        List<Transacao> transacoes = transacaoRepository.findByCarteiraId(carteiraId);
+        double totalInvestido = 0.0;
+        Set<Long> ativosDiferentes = new HashSet<>();
+
+        for (Transacao t : transacoes) {
+            if ("COMPRA".equalsIgnoreCase(t.getTipoOperacao())) {
+                totalInvestido += t.getQuantidade() * t.getPrecoOperacao();
+                if (t.getAtivoFinanceiro() != null) {
+                    ativosDiferentes.add(t.getAtivoFinanceiro().getId());
+                }
+            }
+        }
+
+        Map<String, Object> resumo = new HashMap<>();
+        resumo.put("valorTotalInvestido", totalInvestido);
+        resumo.put("quantidadeAtivosDiferentes", (long) ativosDiferentes.size());
         return resumo;
     }
 }
